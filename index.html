@@ -12,7 +12,6 @@
     :root {
       --bg: #f2f2f7;
       --bg-card: #ffffff;
-      --bg-grouped: #f2f2f7;
       --separator: rgba(60,60,67,0.12);
       --label: #000000;
       --label2: rgba(60,60,67,0.6);
@@ -24,102 +23,58 @@
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #000000;
-        --bg-card: #1c1c1e;
-        --bg-grouped: #000000;
+        --bg: #000000; --bg-card: #1c1c1e;
         --separator: rgba(84,84,88,0.6);
-        --label: #ffffff;
-        --label2: rgba(235,235,245,0.6);
-        --label3: rgba(235,235,245,0.3);
-        --tint: #0a84ff;
-        --destructive: #ff453a;
-        --fill: rgba(118,118,128,0.24);
-        --fill2: rgba(118,118,128,0.16);
+        --label: #ffffff; --label2: rgba(235,235,245,0.6); --label3: rgba(235,235,245,0.3);
+        --tint: #0a84ff; --destructive: #ff453a;
+        --fill: rgba(118,118,128,0.24); --fill2: rgba(118,118,128,0.16);
       }
     }
-
     html { height: 100%; }
-    body {
-      background: var(--bg); color: var(--label);
-      font-family: -apple-system, 'Noto Serif KR', sans-serif;
-      min-height: 100%; font-size: 17px;
-      padding-bottom: env(safe-area-inset-bottom);
-    }
+    body { background: var(--bg); color: var(--label); font-family: -apple-system, 'Noto Serif KR', sans-serif; min-height: 100%; font-size: 17px; padding-bottom: env(safe-area-inset-bottom); }
     ::selection { background: rgba(0,122,255,0.2); }
 
-    /* NAV BAR */
     .navbar {
       position: sticky; top: 0; z-index: 100;
       background: rgba(242,242,247,0.85);
-      -webkit-backdrop-filter: blur(20px);
-      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
       border-bottom: 0.5px solid var(--separator);
-      padding: 0 16px;
-      padding-top: env(safe-area-inset-top);
+      padding: 0 16px; padding-top: env(safe-area-inset-top);
     }
-    @media (prefers-color-scheme: dark) {
-      .navbar { background: rgba(0,0,0,0.85); }
-    }
-    .navbar-inner {
-      height: 44px; display: flex; align-items: center; justify-content: space-between;
-    }
+    @media (prefers-color-scheme: dark) { .navbar { background: rgba(0,0,0,0.85); } }
+    .navbar-inner { height: 44px; display: flex; align-items: center; justify-content: space-between; }
     .navbar-title { font-size: 17px; font-weight: 600; color: var(--label); font-family: -apple-system, sans-serif; }
     .navbar-btn { background: none; border: none; color: var(--tint); font-size: 17px; cursor: pointer; padding: 4px 0; font-family: -apple-system, sans-serif; }
     .navbar-btn:active { opacity: 0.5; }
-    .navbar-large-title {
-      font-size: 34px; font-weight: 700; color: var(--label);
-      padding: 4px 16px 12px; font-family: -apple-system, sans-serif;
-      letter-spacing: -0.5px;
-    }
+    .navbar-large-title { font-size: 34px; font-weight: 700; color: var(--label); padding: 4px 16px 12px; font-family: -apple-system, sans-serif; letter-spacing: -0.5px; }
 
-    /* SEARCH */
     .search-wrap { padding: 0 16px 12px; }
-    .search-bar {
-      width: 100%; background: var(--fill);
-      border: none; border-radius: 10px;
-      padding: 8px 12px 8px 34px;
-      font-size: 17px; color: var(--label);
-      font-family: -apple-system, sans-serif;
-      outline: none; position: relative;
-    }
-    .search-bar::placeholder { color: var(--label3); }
     .search-container { position: relative; }
-    .search-icon {
-      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-      color: var(--label3); font-size: 15px; pointer-events: none;
-    }
+    .search-bar { width: 100%; background: var(--fill); border: none; border-radius: 10px; padding: 8px 12px 8px 34px; font-size: 17px; color: var(--label); font-family: -apple-system, sans-serif; outline: none; }
+    .search-bar::placeholder { color: var(--label3); }
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--label3); font-size: 15px; pointer-events: none; }
 
-    /* VIEWS */
     .view { display: none; }
     .view.active { display: block; }
 
-    /* GROUPED LIST */
     .section { margin: 0 16px 28px; }
     .section-header { font-size: 13px; color: var(--label2); font-family: -apple-system, sans-serif; padding: 0 4px 6px; text-transform: uppercase; letter-spacing: 0.04em; }
     .list-group { background: var(--bg-card); border-radius: 12px; overflow: hidden; }
-    .list-item {
-      padding: 12px 16px; cursor: pointer;
-      border-bottom: 0.5px solid var(--separator);
-      display: flex; align-items: center; gap: 12px;
-      transition: background 0.1s;
-      position: relative;
-    }
+    .list-item { padding: 12px 16px; cursor: pointer; border-bottom: 0.5px solid var(--separator); display: flex; align-items: center; gap: 12px; transition: background 0.1s; }
     .list-item:last-child { border-bottom: none; }
     .list-item:active { background: var(--fill2); }
     .list-item-body { flex: 1; min-width: 0; }
-    .list-item-title { font-size: 17px; color: var(--label); margin-bottom: 2px; font-family: -apple-system, 'Noto Serif KR', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .list-item-title { font-size: 17px; color: var(--label); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .list-item-sub { font-size: 13px; color: var(--label2); font-family: -apple-system, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .list-item-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
     .list-item-date { font-size: 13px; color: var(--label3); font-family: -apple-system, sans-serif; }
     .chevron { color: var(--label3); font-size: 13px; }
 
-    /* EMPTY */
     .empty { text-align: center; padding: 80px 20px; color: var(--label2); font-family: -apple-system, sans-serif; }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
     .empty-title { font-size: 20px; font-weight: 600; color: var(--label); margin-bottom: 8px; }
-    .empty-desc { font-size: 15px; color: var(--label2); line-height: 1.5; }
+    .empty-desc { font-size: 15px; color: var(--label2); line-height: 1.6; }
 
-    /* READ VIEW */
     .read-header { padding: 16px 20px 0; }
     .read-work { font-size: 13px; color: var(--label2); margin-bottom: 4px; font-family: -apple-system, sans-serif; }
     .read-title { font-size: 24px; font-weight: 700; line-height: 1.3; color: var(--label); margin-bottom: 8px; font-family: -apple-system, 'Noto Serif KR', sans-serif; letter-spacing: -0.3px; }
@@ -129,42 +84,36 @@
     .prose { padding: 0 20px 60px; font-size: 17px; line-height: 1.9; color: var(--label); font-family: 'Noto Serif KR', Georgia, serif; }
     .prose p { margin-bottom: 1.3em; }
 
-    /* SETTINGS */
     .settings-body { padding: 20px 0; }
-    .settings-section { margin: 0 16px 32px; }
+    .settings-section { margin: 0 16px 28px; }
     .settings-label { font-size: 13px; color: var(--label2); font-family: -apple-system, sans-serif; text-transform: uppercase; letter-spacing: 0.04em; padding: 0 4px 6px; }
     .settings-group { background: var(--bg-card); border-radius: 12px; overflow: hidden; }
-    .settings-row { padding: 14px 16px; border-bottom: 0.5px solid var(--separator); font-family: -apple-system, sans-serif; font-size: 17px; }
+    .settings-row { padding: 14px 16px; border-bottom: 0.5px solid var(--separator); font-family: -apple-system, sans-serif; }
     .settings-row:last-child { border-bottom: none; }
-    .settings-row-desc { font-size: 13px; color: var(--label2); line-height: 1.6; }
-    .settings-row-desc a { color: var(--tint); }
-    .btn-destructive {
-      width: 100%; padding: 14px; background: var(--bg-card);
-      border: none; border-radius: 12px; color: var(--destructive);
-      font-size: 17px; font-family: -apple-system, sans-serif;
-      cursor: pointer; transition: opacity 0.1s;
-    }
+    .settings-row-label { font-size: 17px; color: var(--label); margin-bottom: 6px; }
+    .settings-input { width: 100%; background: transparent; border: none; font-size: 15px; color: var(--label2); font-family: -apple-system, sans-serif; outline: none; padding: 0; }
+    .settings-input::placeholder { color: var(--label3); }
+    .settings-hint { font-size: 13px; color: var(--label2); line-height: 1.7; padding: 0 4px; margin-top: 6px; }
+    .settings-hint a { color: var(--tint); }
+    .btn-destructive { width: 100%; padding: 14px; background: var(--bg-card); border: none; border-radius: 12px; color: var(--destructive); font-size: 17px; font-family: -apple-system, sans-serif; cursor: pointer; }
     .btn-destructive:active { opacity: 0.5; }
 
-    /* TOAST */
-    .toast {
-      position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-      background: rgba(50,50,50,0.92); color: #fff;
-      padding: 10px 20px; border-radius: 20px; font-size: 14px;
-      white-space: nowrap; z-index: 999; font-family: -apple-system, sans-serif;
-      animation: fadeUp 0.2s ease;
-    }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 40px; gap: 10px; color: var(--label2); font-family: -apple-system, sans-serif; font-size: 15px; }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--separator); border-top-color: var(--tint); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(50,50,50,0.92); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; white-space: nowrap; z-index: 999; font-family: -apple-system, sans-serif; animation: fadeUp 0.2s ease; }
     @keyframes fadeUp { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
   </style>
 </head>
 <body>
 
-<!-- LIST VIEW -->
+<!-- LIST -->
 <div class="view active" id="view-list">
   <div class="navbar">
     <div class="navbar-inner">
       <span></span>
-      <span class="navbar-title" id="list-title" style="display:none">서재</span>
+      <span class="navbar-title">서재</span>
       <button class="navbar-btn" onclick="showView('settings')">설정</button>
     </div>
   </div>
@@ -178,7 +127,7 @@
   <div id="list-body"></div>
 </div>
 
-<!-- READ VIEW -->
+<!-- READ -->
 <div class="view" id="view-read">
   <div class="navbar">
     <div class="navbar-inner">
@@ -196,58 +145,116 @@
   <div class="prose" id="read-prose"></div>
 </div>
 
-<!-- SETTINGS VIEW -->
+<!-- SETTINGS -->
 <div class="view" id="view-settings">
   <div class="navbar">
     <div class="navbar-inner">
       <span></span>
       <span class="navbar-title">설정</span>
-      <button class="navbar-btn" onclick="showView('list')">완료</button>
+      <button class="navbar-btn" onclick="saveSettings()">완료</button>
     </div>
   </div>
   <div class="settings-body">
     <div class="settings-section">
+      <div class="settings-label">GitHub 연동</div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="settings-row-label">Personal Access Token</div>
+          <input class="settings-input" id="input-token" type="password" placeholder="ghp_..." />
+        </div>
+      </div>
+      <div class="settings-hint">
+        github.com → Settings → Developer settings →<br />
+        Personal access tokens → Tokens (classic) →<br />
+        Generate new token → <strong>repo</strong> 체크 후 생성
+      </div>
+    </div>
+    <div class="settings-section">
       <div class="settings-label">단축어 사용법</div>
       <div class="settings-group">
         <div class="settings-row">
-          <div class="settings-row-desc">
+          <div class="settings-hint" style="margin:0">
             콜로모에서 번역 완료 후<br />
             공유(□↑) → <strong>📚 서재에 저장</strong> 탭하면<br />
-            자동으로 목록에 저장돼요
+            자동으로 저장돼요
           </div>
         </div>
       </div>
     </div>
     <div class="settings-section">
-      <div class="settings-label">데이터</div>
       <button class="btn-destructive" onclick="clearAll()">전체 삭제</button>
     </div>
   </div>
 </div>
 
 <script>
-const STORAGE_KEY = 'ao3-library-v1';
-let state = { entries: [] };
+const OWNER = 'frenchfries9638-ui';
+const REPO = 'ao3-library';
+const DATA_FILE = 'data/entries.json';
+const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${DATA_FILE}`;
+
+let token = '';
+let entries = [];
 let currentId = null;
+let fileSha = null;
 
-function load() {
-  try { const r = localStorage.getItem(STORAGE_KEY); if (r) state = JSON.parse(r); } catch(_) {}
+// ── SETTINGS ──
+function loadSettings() {
+  token = localStorage.getItem('gh-token') || '';
+  if (token) document.getElementById('input-token').value = token;
 }
-function persist() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(_) {}
-}
-function genId() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
-function fmtDate(iso) {
-  const d = new Date(iso);
-  const now = new Date();
-  const diff = (now - d) / 1000;
-  if (diff < 60) return '방금';
-  if (diff < 3600) return Math.floor(diff/60) + '분 전';
-  if (diff < 86400) return Math.floor(diff/3600) + '시간 전';
-  if (diff < 86400*7) return Math.floor(diff/86400) + '일 전';
-  return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+function saveSettings() {
+  token = document.getElementById('input-token').value.trim();
+  localStorage.setItem('gh-token', token);
+  showView('list');
+  loadEntries();
 }
 
+// ── GITHUB API ──
+async function ghGet() {
+  const res = await fetch(API_BASE, {
+    headers: token ? { Authorization: `token ${token}` } : {}
+  });
+  if (res.status === 404) return { entries: [], sha: null };
+  if (!res.ok) throw new Error('GitHub 연결 실패');
+  const data = await res.json();
+  fileSha = data.sha;
+  const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+  return { entries: content, sha: data.sha };
+}
+
+async function ghPut(newEntries) {
+  if (!token) throw new Error('토큰 없음');
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(newEntries, null, 2))));
+  const body = { message: 'update entries', content };
+  if (fileSha) body.sha = fileSha;
+  const res = await fetch(API_BASE, {
+    method: 'PUT',
+    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error('저장 실패');
+  const data = await res.json();
+  fileSha = data.content.sha;
+}
+
+async function loadEntries() {
+  const el = document.getElementById('list-body');
+  el.innerHTML = `<div class="loading"><div class="spinner"></div>불러오는 중…</div>`;
+  try {
+    const { entries: e } = await ghGet();
+    entries = e || [];
+    renderList();
+  } catch(err) {
+    if (!token) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">🔑</div><div class="empty-title">토큰 설정 필요</div><div class="empty-desc">설정에서 GitHub 토큰을 입력해주세요</div></div>`;
+    } else {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">불러오기 실패</div><div class="empty-desc">${err.message}</div></div>`;
+    }
+  }
+}
+
+// ── VIEWS ──
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
@@ -255,19 +262,26 @@ function showView(name) {
   if (name === 'list') renderList();
 }
 
+// ── LIST ──
+function fmtDate(iso) {
+  const d = new Date(iso), now = new Date(), diff = (now - d) / 1000;
+  if (diff < 60) return '방금';
+  if (diff < 3600) return Math.floor(diff/60) + '분 전';
+  if (diff < 86400) return Math.floor(diff/3600) + '시간 전';
+  if (diff < 86400*7) return Math.floor(diff/86400) + '일 전';
+  return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+}
+
 function renderList() {
-  const q = (document.getElementById('search').value || '').toLowerCase();
-  const filtered = state.entries.filter(e =>
+  const q = (document.getElementById('search')?.value || '').toLowerCase();
+  const filtered = entries.filter(e =>
     !q || e.title.toLowerCase().includes(q) || (e.workTitle||'').toLowerCase().includes(q)
   );
   const el = document.getElementById('list-body');
+  if (!el) return;
 
-  if (state.entries.length === 0) {
-    el.innerHTML = `<div class="empty">
-      <div class="empty-icon">📚</div>
-      <div class="empty-title">서재가 비어있어요</div>
-      <div class="empty-desc">콜로모에서 번역 후<br>단축어로 저장해보세요</div>
-    </div>`;
+  if (entries.length === 0) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">서재가 비어있어요</div><div class="empty-desc">콜로모에서 번역 후<br>단축어로 저장해보세요</div></div>`;
     return;
   }
   if (filtered.length === 0) {
@@ -275,19 +289,15 @@ function renderList() {
     return;
   }
 
-  // 날짜별 그룹
   const groups = {};
   filtered.forEach(e => {
-    const d = new Date(e.updatedAt);
-    const now = new Date();
-    const diff = (now - d) / 86400000;
-    let g = diff < 1 ? '오늘' : diff < 7 ? '이번 주' : diff < 30 ? '이번 달' : '이전';
+    const diff = (new Date() - new Date(e.updatedAt)) / 86400000;
+    const g = diff < 1 ? '오늘' : diff < 7 ? '이번 주' : diff < 30 ? '이번 달' : '이전';
     if (!groups[g]) groups[g] = [];
     groups[g].push(e);
   });
 
-  const order = ['오늘', '이번 주', '이번 달', '이전'];
-  el.innerHTML = order.filter(g => groups[g]).map(g => `
+  el.innerHTML = ['오늘','이번 주','이번 달','이전'].filter(g => groups[g]).map(g => `
     <div class="section">
       <div class="section-header">${g}</div>
       <div class="list-group">
@@ -308,86 +318,84 @@ function renderList() {
   `).join('');
 }
 
+// ── READ ──
 function openEntry(entry) {
   currentId = entry.id;
   document.getElementById('read-nav-title').textContent = entry.title;
   document.getElementById('read-work').textContent = entry.workTitle ? `『${entry.workTitle}』` : '';
   document.getElementById('read-title').textContent = entry.title;
-
-  let meta = `<span>${new Date(entry.createdAt).toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric'})}</span><span>·</span><span>${entry.content.trim().length.toLocaleString()}자</span>`;
+  let meta = `<span>${new Date(entry.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})}</span><span>·</span><span>${entry.content.trim().length.toLocaleString()}자</span>`;
   if (entry.sourceUrl) meta += `<a href="${entry.sourceUrl}" target="_blank">원문 보기</a>`;
   document.getElementById('read-meta').innerHTML = meta;
-  document.getElementById('read-prose').innerHTML =
-    entry.content.split(/\n+/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('');
-
+  document.getElementById('read-prose').innerHTML = entry.content.split(/\n+/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('');
   showView('read');
 }
 
-function deleteCurrent() {
+async function deleteCurrent() {
   if (!confirm('이 번역을 삭제할까요?')) return;
-  state.entries = state.entries.filter(e => e.id !== currentId);
-  persist();
+  entries = entries.filter(e => e.id !== currentId);
+  try {
+    await ghPut(entries);
+    showToast('삭제됐어요');
+  } catch(_) { showToast('삭제 실패'); }
   showView('list');
 }
 
-function clearAll() {
+async function clearAll() {
   if (!confirm('모든 번역을 삭제할까요?')) return;
-  state.entries = [];
-  persist();
+  entries = [];
+  try { await ghPut([]); showToast('삭제됐어요'); } catch(_) {}
   showView('list');
 }
 
-// ── IMPORT ──
-function saveEntry(data) {
-  if (!data.content || data.content.length < 10) return;
-  const already = state.entries.some(e => e.createdAt === data.createdAt && e.sourceUrl === data.sourceUrl);
-  if (already) { showToast('이미 저장된 번역이에요'); return; }
-  const entry = {
-    id: genId(),
-    title: data.title || '번역',
-    workTitle: data.workTitle || '',
-    sourceUrl: data.sourceUrl || '',
-    content: data.content,
-    createdAt: data.createdAt || new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  state.entries.unshift(entry);
-  persist();
-  showToast('저장됐어요');
-  openEntry(entry);
-}
-
-function checkImport() {
+// ── IMPORT FROM SHORTCUT ──
+async function checkImport() {
   const params = new URLSearchParams(location.search);
-  // 단축어에서 온 경우 localStorage 확인
-  if (params.get('from') === 'shortcut') {
-    history.replaceState({}, '', location.pathname);
-    try {
-      const raw = localStorage.getItem('ao3-pending');
-      if (raw) {
-        localStorage.removeItem('ao3-pending');
-        saveEntry(JSON.parse(raw));
-        return;
-      }
-    } catch(_) {}
-  }
-  // URL 파라미터 방식 (fallback)
-  const raw = params.get('import');
+  const raw = params.get('data');
   if (!raw) return;
   history.replaceState({}, '', location.pathname);
-  try { saveEntry(JSON.parse(decodeURIComponent(raw))); } catch(_) {}
+
+  try {
+    const data = JSON.parse(decodeURIComponent(raw));
+    if (!data.content || data.content.length < 10) return;
+
+    showToast('저장 중…');
+    const { entries: current } = await ghGet();
+    entries = current || [];
+
+    const already = entries.some(e => e.createdAt === data.createdAt);
+    if (already) { showToast('이미 저장된 번역이에요'); renderList(); return; }
+
+    const entry = {
+      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
+      title: data.title || '번역',
+      workTitle: data.workTitle || '',
+      sourceUrl: data.sourceUrl || '',
+      content: data.content,
+      createdAt: data.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    entries.unshift(entry);
+    await ghPut(entries);
+    showToast('저장됐어요!');
+    openEntry(entry);
+  } catch(e) {
+    showToast('저장 실패: ' + e.message);
+    renderList();
+  }
 }
 
 function showToast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
   const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
+  t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2200);
+  setTimeout(() => t.remove(), 2500);
 }
 
-load();
-renderList();
+// ── INIT ──
+loadSettings();
+loadEntries();
 checkImport();
 </script>
 </body>
