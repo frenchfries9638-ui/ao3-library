@@ -226,7 +226,7 @@ async function ghGet() {
   if (!res.ok) throw new Error('GitHub 연결 실패');
   const data = await res.json();
   fileSha = data.sha;
-  const content = JSON.parse(decodeURIComponent(atob(data.content.replace(/\n/g, '')).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+  const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
   return { entries: content, sha: data.sha };
 }
 
