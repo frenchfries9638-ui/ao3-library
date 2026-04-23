@@ -114,6 +114,9 @@
     .btn-del:active { opacity:.5; }
 
     .loading { display:flex; align-items:center; justify-content:center; padding:40px; gap:10px; color:var(--label2); font-family:-apple-system,sans-serif; font-size:15px; }
+    .sync-bar { position:fixed; top:0; left:0; right:0; height:3px; background:var(--tint); z-index:200; transform-origin:left; animation:syncBar 1.5s ease-in-out infinite; }
+    @keyframes syncBar { 0%{transform:scaleX(0);opacity:1} 70%{transform:scaleX(0.8);opacity:1} 100%{transform:scaleX(1);opacity:0} }
+    .sync-badge { position:fixed; top:calc(env(safe-area-inset-top) + 50px); right:16px; background:var(--tint); color:#fff; font-size:12px; padding:4px 10px; border-radius:20px; font-family:-apple-system,sans-serif; z-index:200; animation:fadeUp .2s ease; }
     .spinner { width:20px; height:20px; border:2px solid var(--separator); border-top-color:var(--tint); border-radius:50%; animation:spin .8s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
     .toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:rgba(50,50,50,0.92); color:#fff; padding:10px 20px; border-radius:20px; font-size:14px; white-space:nowrap; z-index:999; font-family:-apple-system,sans-serif; animation:fadeUp .2s ease; }
@@ -126,7 +129,8 @@
 <div class="view active" id="view-list">
   <div class="navbar">
     <div class="navbar-inner">
-      <span></span><span class="navbar-title">서재</span>
+      <button class="navbar-btn" onclick="loadIndex()">↻</button>
+      <span class="navbar-title">서재</span>
       <button class="navbar-btn" onclick="showView('settings')">설정</button>
     </div>
   </div>
@@ -285,9 +289,33 @@ async function ghReadRaw(path) {
 }
 
 // ── INDEX (목록만) ──
+function showSyncBar() {
+  removeSyncBar();
+  const bar = document.createElement('div');
+  bar.className = 'sync-bar'; bar.id = 'sync-bar';
+  document.body.appendChild(bar);
+}
+function removeSyncBar() {
+  document.getElementById('sync-bar')?.remove();
+  document.getElementById('sync-badge')?.remove();
+}
+function showSyncBadge(msg) {
+  removeSyncBar();
+  const badge = document.createElement('div');
+  badge.className = 'sync-badge'; badge.id = 'sync-badge';
+  badge.textContent = msg;
+  document.body.appendChild(badge);
+  setTimeout(() => badge?.remove(), 2000);
+}
+
 async function loadIndex() {
   const el = document.getElementById('list-body');
-  el.innerHTML = `<div class="loading"><div class="spinner"></div>불러오는 중…</div>`;
+  const isRefresh = index.length > 0;
+  if (!isRefresh) {
+    el.innerHTML = `<div class="loading"><div class="spinner"></div>불러오는 중…</div>`;
+  } else {
+    showSyncBar();
+  }
   try {
     if (!token) throw new Error('no-token');
     const { data } = await ghReadFile('data/index.json');
@@ -297,8 +325,10 @@ async function loadIndex() {
     } else {
       index = [];
     }
+    if (isRefresh) showSyncBadge('✓ 업데이트됐어요');
     renderList();
   } catch(err) {
+    removeSyncBar();
     el.innerHTML = err.message === 'no-token'
       ? `<div class="empty"><div class="empty-icon">🔑</div><div class="empty-title">토큰 설정 필요</div><div class="empty-desc">설정에서 GitHub 토큰을 입력해주세요</div></div>`
       : `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">불러오기 실패</div><div class="empty-desc">${err.message}</div></div>`;
