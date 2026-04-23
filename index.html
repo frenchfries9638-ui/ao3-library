@@ -359,23 +359,23 @@ function saveEntry(data) {
 
 function checkImport() {
   const params = new URLSearchParams(location.search);
+  // 단축어에서 온 경우 localStorage 확인
+  if (params.get('from') === 'shortcut') {
+    history.replaceState({}, '', location.pathname);
+    try {
+      const raw = localStorage.getItem('ao3-pending');
+      if (raw) {
+        localStorage.removeItem('ao3-pending');
+        saveEntry(JSON.parse(raw));
+        return;
+      }
+    } catch(_) {}
+  }
+  // URL 파라미터 방식 (fallback)
   const raw = params.get('import');
   if (!raw) return;
   history.replaceState({}, '', location.pathname);
   try { saveEntry(JSON.parse(decodeURIComponent(raw))); } catch(_) {}
-}
-
-async function checkClipboard() {
-  try {
-    const text = await navigator.clipboard.readText();
-    if (!text || text.length < 50) return;
-    const data = JSON.parse(text);
-    if (!data.content || data.content.length < 50) return;
-    const already = state.entries.some(e => e.createdAt === data.createdAt);
-    if (already) return;
-    await navigator.clipboard.writeText('');
-    saveEntry(data);
-  } catch(_) {}
 }
 
 function showToast(msg) {
@@ -389,7 +389,6 @@ function showToast(msg) {
 load();
 renderList();
 checkImport();
-checkClipboard();
 </script>
 </body>
 </html>
