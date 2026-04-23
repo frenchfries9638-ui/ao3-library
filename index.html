@@ -48,7 +48,7 @@ body { background: var(--bg); color: var(--label); font-family: -apple-system, '
 .list-item:last-child { border-bottom: none; }
 .list-item:active { background: var(--fill); }
 .list-item-body { flex: 1; min-width: 0; }
-.list-item-title { font-size: 17px; color: var(--label); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list-item-title { font-size: 17px; color: var(--label); margin-bottom: 2px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3; }
 .list-item-sub { font-size: 13px; color: var(--label2); font-family: -apple-system, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .list-item-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .list-item-date { font-size: 13px; color: var(--label3); font-family: -apple-system, sans-serif; }
@@ -115,6 +115,18 @@ body { background: var(--bg); color: var(--label); font-family: -apple-system, '
 .spinner { width: 20px; height: 20px; border: 2px solid var(--separator); border-top-color: var(--tint); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* TAGS */
+.tag-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--fill); border-radius: 20px; padding: 3px 10px; font-size: 12px; color: var(--label2); font-family: -apple-system, sans-serif; cursor: pointer; white-space: nowrap; }
+.tag-chip.active { background: var(--tint); color: #fff; }
+.tag-chip.removable::after { content: '×'; margin-left: 2px; opacity: 0.7; }
+.tag-filter-wrap { padding: 0 16px 12px; display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.tag-filter-wrap::-webkit-scrollbar { display: none; }
+.tag-input-wrap { display: flex; gap: 8px; align-items: center; }
+.tag-input { flex: 1; background: var(--fill); border: none; border-radius: 8px; padding: 8px 12px; font-size: 15px; color: var(--label); font-family: -apple-system, sans-serif; outline: none; }
+.tag-input::placeholder { color: var(--label3); }
+.tag-add-btn { background: var(--tint); border: none; border-radius: 8px; padding: 8px 14px; color: #fff; font-size: 15px; cursor: pointer; font-family: -apple-system, sans-serif; white-space: nowrap; }
+.read-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; padding: 0 20px; }
+
 .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(50,50,50,0.92); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; white-space: nowrap; z-index: 999; font-family: -apple-system, sans-serif; animation: fadeUp 0.2s ease; }
 @keyframes fadeUp { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
 ```
@@ -140,6 +152,7 @@ body { background: var(--bg); color: var(--label); font-family: -apple-system, '
       <input class="search-bar" id="search" placeholder="검색" oninput="renderList()" />
     </div>
   </div>
+  <div class="tag-filter-wrap" id="tag-filter-wrap"></div>
   <div id="list-body"></div>
 </div>
 
@@ -158,6 +171,7 @@ body { background: var(--bg); color: var(--label); font-family: -apple-system, '
     <div class="read-title" id="read-title"></div>
     <div class="read-meta" id="read-meta"></div>
   </div>
+  <div class="read-tags" id="read-tags"></div>
   <div class="read-divider"></div>
   <div class="prose" id="read-prose"></div>
 </div>
@@ -184,6 +198,14 @@ body { background: var(--bg); color: var(--label); font-family: -apple-system, '
     <button class="toolbar-btn" id="mode-both" onclick="setMode('both')">둘 다</button>
     <button class="toolbar-btn" id="mode-en" onclick="setMode('en')">영어만</button>
   </div>
+  <!-- 태그 -->
+  <div class="toolbar-row">
+    <div class="tag-input-wrap" style="width:100%">
+      <input class="tag-input" id="tag-input" placeholder="태그 추가…" onkeydown="if(event.key==='Enter')addTag()" />
+      <button class="tag-add-btn" onclick="addTag()">추가</button>
+    </div>
+  </div>
+  <div id="toolbar-tags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:10px"></div>
   <!-- 테마 -->
   <div class="toolbar-row" style="justify-content:center;gap:16px">
     <button class="theme-btn theme-light-btn" id="theme-light" onclick="setTheme('light')"></button>
@@ -246,6 +268,7 @@ let token = '';
 let entries = [];
 let currentId = null;
 let fileSha = null;
+let activeTag = null;
 
 // ── READER PREFS ──
 let prefs = { fontSize: 17, lineHeight: 1.9, mode: 'ko', theme: 'light' };
@@ -399,11 +422,37 @@ function fmtDate(iso) {
   return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
 }
 
+function getAllTags() {
+  const set = new Set();
+  entries.forEach(e => (e.tags || []).forEach(t => set.add(t)));
+  return [...set].sort();
+}
+
+function renderTagFilter() {
+  const el = document.getElementById('tag-filter-wrap');
+  if (!el) return;
+  const tags = getAllTags();
+  if (tags.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = [
+    `<span class="tag-chip ${!activeTag ? 'active' : ''}" onclick="setActiveTag(null)">전체</span>`,
+    ...tags.map(t => `<span class="tag-chip ${activeTag === t ? 'active' : ''}" onclick="setActiveTag('${t}')">${t}</span>`)
+  ].join('');
+}
+
+function setActiveTag(tag) {
+  activeTag = tag;
+  renderTagFilter();
+  renderList();
+}
+
 function renderList() {
+  renderTagFilter();
   const q = (document.getElementById('search')?.value || '').toLowerCase();
-  const filtered = entries.filter(e =>
-    !q || e.title.toLowerCase().includes(q) || (e.workTitle||'').toLowerCase().includes(q)
-  );
+  const filtered = entries.filter(e => {
+    const matchQ = !q || e.title.toLowerCase().includes(q) || (e.workTitle||'').toLowerCase().includes(q);
+    const matchTag = !activeTag || (e.tags || []).includes(activeTag);
+    return matchQ && matchTag;
+  });
   const el = document.getElementById('list-body');
   if (!el) return;
 
@@ -433,6 +482,7 @@ function renderList() {
             <div class="list-item-body">
               <div class="list-item-title">${e.title}</div>
               <div class="list-item-sub">${e.workTitle ? `『${e.workTitle}』` : e.content.slice(0,30)}</div>
+              ${(e.tags||[]).length ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">${(e.tags||[]).map(t=>`<span class="tag-chip" style="font-size:11px;padding:2px 7px">${t}</span>`).join('')}</div>` : ''}
             </div>
             <div class="list-item-right">
               <div class="list-item-date">${fmtDate(e.updatedAt)}</div>
@@ -453,7 +503,10 @@ function openEntry(entry) {
   document.getElementById('read-title').textContent = entry.title;
 
   let meta = `<span>${new Date(entry.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})}</span><span>·</span><span>${entry.content.trim().length.toLocaleString()}자</span>`;
-  if (entry.sourceUrl) meta += `<a href="${entry.sourceUrl}" target="_blank">원문 보기</a>`;
+  if (entry.sourceUrl) {
+    meta += `<a href="${entry.sourceUrl}" target="_blank">원문 보기</a>`;
+    meta += `<button onclick="copySourceUrl('${entry.sourceUrl}')" style="background:none;border:none;color:var(--tint);font-size:13px;cursor:pointer;padding:0;font-family:-apple-system,sans-serif;">링크 복사</button>`;
+  }
   document.getElementById('read-meta').innerHTML = meta;
 
   // 단락 파싱 - 영어/한글 구분
@@ -471,6 +524,40 @@ function openEntry(entry) {
 
   // 스크롤 위치 저장 (1초마다)
   window.addEventListener('scroll', saveScrollPos);
+}
+
+function renderToolbarTags(tags) {
+  const el = document.getElementById('toolbar-tags');
+  if (!el) return;
+  el.innerHTML = tags.map(t => `<span class="tag-chip removable" onclick="removeTag('${t}')">${t}</span>`).join('');
+}
+
+function addTag() {
+  const input = document.getElementById('tag-input');
+  const val = input.value.trim();
+  if (!val || !currentId) return;
+  input.value = '';
+  const entry = entries.find(e => e.id === currentId);
+  if (!entry) return;
+  if (!entry.tags) entry.tags = [];
+  if (entry.tags.includes(val)) return;
+  entry.tags.push(val);
+  renderToolbarTags(entry.tags);
+  document.getElementById('read-tags').innerHTML = entry.tags.map(t => `<span class="tag-chip" onclick="setActiveTag('${t}');exitRead()">${t}</span>`).join('');
+  saveTags(entry);
+}
+
+function removeTag(tag) {
+  const entry = entries.find(e => e.id === currentId);
+  if (!entry) return;
+  entry.tags = (entry.tags || []).filter(t => t !== tag);
+  renderToolbarTags(entry.tags);
+  document.getElementById('read-tags').innerHTML = entry.tags.map(t => `<span class="tag-chip" onclick="setActiveTag('${t}');exitRead()">${t}</span>`).join('');
+  saveTags(entry);
+}
+
+async function saveTags(entry) {
+  try { await ghPut(entries); showToast('태그 저장됨'); } catch(_) { showToast('태그 저장 실패'); }
 }
 
 function exitRead() {
@@ -525,6 +612,21 @@ async function checkImport() {
     showToast('저장 실패: ' + e.message);
     renderList();
   }
+}
+
+function copySourceUrl(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('링크 복사됐어요');
+  }).catch(() => {
+    // fallback
+    const el = document.createElement('textarea');
+    el.value = url;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('링크 복사됐어요');
+  });
 }
 
 function showToast(msg) {
