@@ -219,17 +219,21 @@ function saveSettings() {
 
 // ── GITHUB API ──
 async function ghGet() {
-  const res = await fetch(API_BASE, {
+  // SHA 가져오기용 API 호출
+  const apiRes = await fetch(API_BASE, {
     headers: token ? { Authorization: `token ${token}` } : {}
   });
-  if (res.status === 404) return { entries: [], sha: null };
-  if (!res.ok) throw new Error('GitHub 연결 실패');
-  const data = await res.json();
-  fileSha = data.sha;
-  const b64 = data.content.replace(/\n/g, '');
-  const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-  const content = JSON.parse(new TextDecoder().decode(bytes));
-  return { entries: content, sha: data.sha };
+  if (apiRes.status === 404) return { entries: [], sha: null };
+  if (!apiRes.ok) throw new Error('GitHub 연결 실패');
+  const apiData = await apiRes.json();
+  fileSha = apiData.sha;
+
+  // 실제 내용은 raw URL로 가져오기 (인코딩 문제 없음)
+  const rawUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${DATA_FILE}?t=${Date.now()}`;
+  const rawRes = await fetch(rawUrl);
+  if (!rawRes.ok) return { entries: [], sha: apiData.sha };
+  const entries = await rawRes.json();
+  return { entries, sha: apiData.sha };
 }
 
 async function ghPut(newEntries) {
