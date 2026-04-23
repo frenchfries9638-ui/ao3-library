@@ -49,10 +49,16 @@
     .item-body { flex:1; min-width:0; }
     .item-title { font-size:17px; color:var(--label); margin-bottom:2px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:1.3; }
     .item-sub { font-size:13px; color:var(--label2); font-family:-apple-system,sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .item-tags { display:flex; gap:4px; flex-wrap:wrap; margin-top:4px; }
+    .item-work { font-size:13px; color:var(--tint); font-family:-apple-system,sans-serif; margin-bottom:3px; font-weight:500; }
+    .item-chapter { font-size:16px; color:var(--label); margin-bottom:4px; line-height:1.3; }
+    .item-tags { display:flex; gap:4px; flex-wrap:wrap; margin-top:6px; }
     .item-tag { background:var(--fill); border-radius:20px; padding:2px 8px; font-size:11px; color:var(--label2); font-family:-apple-system,sans-serif; }
+    .item-date-row { font-size:12px; color:var(--label3); font-family:-apple-system,sans-serif; margin-top:5px; }
     .item-right { display:flex; align-items:center; gap:4px; flex-shrink:0; }
     .item-date { font-size:13px; color:var(--label3); font-family:-apple-system,sans-serif; }
+    .item-work { font-size:12px; color:var(--tint); font-family:-apple-system,sans-serif; margin-bottom:2px; }
+    .item-preview { font-size:13px; color:var(--label3); font-family:-apple-system,sans-serif; margin-top:4px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; }
+    .item-date-row { font-size:11px; color:var(--label3); font-family:-apple-system,sans-serif; margin-top:6px; }
     .chevron { color:var(--label3); font-size:13px; }
     .empty { text-align:center; padding:80px 20px; }
     .empty-icon { font-size:48px; margin-bottom:12px; }
@@ -399,12 +405,12 @@ function renderList() {
         ${groups[g].map(e=>`
           <div class="list-item" onclick='openEntry(${JSON.stringify(e).replace(/'/g,"&#39;")})'>
             <div class="item-body">
-              <div class="item-title">${e.title}</div>
-              <div class="item-sub">${e.workTitle?`『${e.workTitle}』`:''}</div>
+              ${e.workTitle?`<div class="item-work">『${e.workTitle}』</div>`:''}
+              <div class="item-chapter">${e.title}</div>
               ${(e.tags||[]).length?`<div class="item-tags">${(e.tags||[]).map(t=>`<span class="item-tag">${t}</span>`).join('')}</div>`:''}
+              <div class="item-date-row">${fmtDate(e.updatedAt)}</div>
             </div>
-            <div class="item-right">
-              <div class="item-date">${fmtDate(e.updatedAt)}</div>
+            <div class="item-right" style="align-self:flex-start;padding-top:2px">
               <div class="chevron">›</div>
             </div>
           </div>
