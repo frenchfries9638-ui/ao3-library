@@ -10,61 +10,43 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    :root {
-      --bg: #f2f2f7;
-      --bg-card: #ffffff;
-      --separator: rgba(60,60,67,0.12);
-      --label: #000000;
-      --label2: rgba(60,60,67,0.6);
-      --label3: rgba(60,60,67,0.3);
-      --tint: #007aff;
-      --destructive: #ff3b30;
-      --fill: rgba(120,120,128,0.12);
-      --fill2: rgba(120,120,128,0.08);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #000000; --bg-card: #1c1c1e;
-        --separator: rgba(84,84,88,0.6);
-        --label: #ffffff; --label2: rgba(235,235,245,0.6); --label3: rgba(235,235,245,0.3);
-        --tint: #0a84ff; --destructive: #ff453a;
-        --fill: rgba(118,118,128,0.24); --fill2: rgba(118,118,128,0.16);
-      }
-    }
-    html { height: 100%; }
-    body { background: var(--bg); color: var(--label); font-family: -apple-system, 'Noto Serif KR', sans-serif; min-height: 100%; font-size: 17px; padding-bottom: env(safe-area-inset-bottom); }
-    ::selection { background: rgba(0,122,255,0.2); }
 
 ```
-.navbar {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(242,242,247,0.85);
-  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-  border-bottom: 0.5px solid var(--separator);
-  padding: 0 16px; padding-top: env(safe-area-inset-top);
-}
-@media (prefers-color-scheme: dark) { .navbar { background: rgba(0,0,0,0.85); } }
+/* THEMES */
+body.theme-light { --bg: #f2f2f7; --bg-card: #fff; --bg-nav: rgba(242,242,247,0.85); --label: #000; --label2: rgba(60,60,67,0.6); --label3: rgba(60,60,67,0.3); --tint: #007aff; --destructive: #ff3b30; --fill: rgba(120,120,128,0.12); --separator: rgba(60,60,67,0.12); --prose: #1a1a1a; }
+body.theme-dark { --bg: #000; --bg-card: #1c1c1e; --bg-nav: rgba(0,0,0,0.85); --label: #fff; --label2: rgba(235,235,245,0.6); --label3: rgba(235,235,245,0.3); --tint: #0a84ff; --destructive: #ff453a; --fill: rgba(118,118,128,0.24); --separator: rgba(84,84,88,0.6); --prose: #e8e8e8; }
+body.theme-sepia { --bg: #f4efe6; --bg-card: #ede6d8; --bg-nav: rgba(244,239,230,0.9); --label: #3b2f1e; --label2: rgba(59,47,30,0.6); --label3: rgba(59,47,30,0.3); --tint: #8b5e3c; --destructive: #c0392b; --fill: rgba(139,94,60,0.12); --separator: rgba(59,47,30,0.12); --prose: #3b2f1e; }
+
+html { height: 100%; }
+body { background: var(--bg); color: var(--label); font-family: -apple-system, 'Noto Serif KR', sans-serif; min-height: 100%; padding-bottom: env(safe-area-inset-bottom); transition: background 0.2s, color 0.2s; }
+::selection { background: rgba(0,122,255,0.2); }
+
+/* NAV */
+.navbar { position: sticky; top: 0; z-index: 100; background: var(--bg-nav); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-bottom: 0.5px solid var(--separator); padding: 0 16px; padding-top: env(safe-area-inset-top); }
 .navbar-inner { height: 44px; display: flex; align-items: center; justify-content: space-between; }
 .navbar-title { font-size: 17px; font-weight: 600; color: var(--label); font-family: -apple-system, sans-serif; }
-.navbar-btn { background: none; border: none; color: var(--tint); font-size: 17px; cursor: pointer; padding: 4px 0; font-family: -apple-system, sans-serif; }
+.navbar-btn { background: none; border: none; color: var(--tint); font-size: 17px; cursor: pointer; padding: 4px 2px; font-family: -apple-system, sans-serif; }
 .navbar-btn:active { opacity: 0.5; }
 .navbar-large-title { font-size: 34px; font-weight: 700; color: var(--label); padding: 4px 16px 12px; font-family: -apple-system, sans-serif; letter-spacing: -0.5px; }
 
+/* SEARCH */
 .search-wrap { padding: 0 16px 12px; }
 .search-container { position: relative; }
 .search-bar { width: 100%; background: var(--fill); border: none; border-radius: 10px; padding: 8px 12px 8px 34px; font-size: 17px; color: var(--label); font-family: -apple-system, sans-serif; outline: none; }
 .search-bar::placeholder { color: var(--label3); }
 .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--label3); font-size: 15px; pointer-events: none; }
 
+/* VIEWS */
 .view { display: none; }
 .view.active { display: block; }
 
+/* LIST */
 .section { margin: 0 16px 28px; }
 .section-header { font-size: 13px; color: var(--label2); font-family: -apple-system, sans-serif; padding: 0 4px 6px; text-transform: uppercase; letter-spacing: 0.04em; }
 .list-group { background: var(--bg-card); border-radius: 12px; overflow: hidden; }
-.list-item { padding: 12px 16px; cursor: pointer; border-bottom: 0.5px solid var(--separator); display: flex; align-items: center; gap: 12px; transition: background 0.1s; }
+.list-item { padding: 12px 16px; cursor: pointer; border-bottom: 0.5px solid var(--separator); display: flex; align-items: center; gap: 12px; }
 .list-item:last-child { border-bottom: none; }
-.list-item:active { background: var(--fill2); }
+.list-item:active { background: var(--fill); }
 .list-item-body { flex: 1; min-width: 0; }
 .list-item-title { font-size: 17px; color: var(--label); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .list-item-sub { font-size: 13px; color: var(--label2); font-family: -apple-system, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -72,20 +54,50 @@
 .list-item-date { font-size: 13px; color: var(--label3); font-family: -apple-system, sans-serif; }
 .chevron { color: var(--label3); font-size: 13px; }
 
-.empty { text-align: center; padding: 80px 20px; color: var(--label2); font-family: -apple-system, sans-serif; }
+.empty { text-align: center; padding: 80px 20px; }
 .empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-title { font-size: 20px; font-weight: 600; color: var(--label); margin-bottom: 8px; }
-.empty-desc { font-size: 15px; color: var(--label2); line-height: 1.6; }
+.empty-title { font-size: 20px; font-weight: 600; color: var(--label); margin-bottom: 8px; font-family: -apple-system, sans-serif; }
+.empty-desc { font-size: 15px; color: var(--label2); line-height: 1.6; font-family: -apple-system, sans-serif; }
 
+/* READ */
 .read-header { padding: 16px 20px 0; }
 .read-work { font-size: 13px; color: var(--label2); margin-bottom: 4px; font-family: -apple-system, sans-serif; }
-.read-title { font-size: 24px; font-weight: 700; line-height: 1.3; color: var(--label); margin-bottom: 8px; font-family: -apple-system, 'Noto Serif KR', sans-serif; letter-spacing: -0.3px; }
+.read-title { font-size: 24px; font-weight: 700; line-height: 1.3; color: var(--label); margin-bottom: 8px; letter-spacing: -0.3px; }
 .read-meta { font-size: 13px; color: var(--label2); font-family: -apple-system, sans-serif; display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .read-meta a { color: var(--tint); text-decoration: none; }
 .read-divider { height: 0.5px; background: var(--separator); margin: 0 20px 24px; }
-.prose { padding: 0 20px 60px; font-size: 17px; line-height: 1.9; color: var(--label); font-family: 'Noto Serif KR', Georgia, serif; }
-.prose p { margin-bottom: 1.3em; }
 
+/* PROSE */
+.prose { padding: 0 20px 120px; color: var(--prose); font-family: 'Noto Serif KR', Georgia, serif; }
+.prose p { margin-bottom: 1.3em; }
+.prose .en { color: var(--label2); font-style: italic; font-size: 0.9em; margin-bottom: 0.4em; }
+.prose .ko { }
+.prose.hide-en .en { display: none; }
+.prose.hide-ko .ko { display: none; }
+
+/* READER TOOLBAR */
+.reader-toolbar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--bg-nav); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--separator);
+  padding: 10px 20px; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  display: none; flex-direction: column; gap: 10px; z-index: 50;
+}
+.reader-toolbar.visible { display: flex; }
+.toolbar-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.toolbar-btn { background: var(--fill); border: none; color: var(--label); padding: 8px 14px; border-radius: 8px; font-size: 15px; cursor: pointer; font-family: -apple-system, sans-serif; flex: 1; text-align: center; }
+.toolbar-btn:active { opacity: 0.6; }
+.toolbar-btn.active { background: var(--tint); color: #fff; }
+.toolbar-label { font-size: 12px; color: var(--label3); font-family: -apple-system, sans-serif; text-align: center; min-width: 40px; }
+
+/* THEME BUTTONS */
+.theme-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; flex-shrink: 0; }
+.theme-btn.active { border-color: var(--tint); }
+.theme-light-btn { background: #f2f2f7; border: 2px solid #ddd; }
+.theme-dark-btn { background: #1c1c1e; }
+.theme-sepia-btn { background: #f4efe6; border: 2px solid #c8b89a; }
+
+/* SETTINGS */
 .settings-body { padding: 20px 0; }
 .settings-section { margin: 0 16px 28px; }
 .settings-label { font-size: 13px; color: var(--label2); font-family: -apple-system, sans-serif; text-transform: uppercase; letter-spacing: 0.04em; padding: 0 4px 6px; }
@@ -96,7 +108,6 @@
 .settings-input { width: 100%; background: transparent; border: none; font-size: 15px; color: var(--label2); font-family: -apple-system, sans-serif; outline: none; padding: 0; }
 .settings-input::placeholder { color: var(--label3); }
 .settings-hint { font-size: 13px; color: var(--label2); line-height: 1.7; padding: 0 4px; margin-top: 6px; }
-.settings-hint a { color: var(--tint); }
 .btn-destructive { width: 100%; padding: 14px; background: var(--bg-card); border: none; border-radius: 12px; color: var(--destructive); font-size: 17px; font-family: -apple-system, sans-serif; cursor: pointer; }
 .btn-destructive:active { opacity: 0.5; }
 
@@ -104,13 +115,13 @@
 .spinner { width: 20px; height: 20px; border: 2px solid var(--separator); border-top-color: var(--tint); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(50,50,50,0.92); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; white-space: nowrap; z-index: 999; font-family: -apple-system, sans-serif; animation: fadeUp 0.2s ease; }
+.toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(50,50,50,0.92); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; white-space: nowrap; z-index: 999; font-family: -apple-system, sans-serif; animation: fadeUp 0.2s ease; }
 @keyframes fadeUp { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
 ```
 
   </style>
 </head>
-<body>
+<body class="theme-light">
 
 <!-- LIST -->
 
@@ -137,9 +148,9 @@
 <div class="view" id="view-read">
   <div class="navbar">
     <div class="navbar-inner">
-      <button class="navbar-btn" onclick="showView('list')">‹ 서재</button>
+      <button class="navbar-btn" onclick="exitRead()">‹ 서재</button>
       <span class="navbar-title" id="read-nav-title"></span>
-      <button class="navbar-btn" style="color:var(--destructive)" onclick="deleteCurrent()">삭제</button>
+      <button class="navbar-btn" onclick="toggleToolbar()">가 </button>
     </div>
   </div>
   <div class="read-header">
@@ -149,6 +160,37 @@
   </div>
   <div class="read-divider"></div>
   <div class="prose" id="read-prose"></div>
+</div>
+
+<!-- READER TOOLBAR -->
+
+<div class="reader-toolbar" id="reader-toolbar">
+  <!-- 글자 크기 -->
+  <div class="toolbar-row">
+    <button class="toolbar-btn" style="flex:0;padding:8px 18px;font-size:13px" onclick="changeFontSize(-1)">가−</button>
+    <span class="toolbar-label" id="font-size-label">17px</span>
+    <button class="toolbar-btn" style="flex:0;padding:8px 18px;font-size:19px" onclick="changeFontSize(1)">가+</button>
+  </div>
+  <!-- 자간 -->
+  <div class="toolbar-row">
+    <span style="font-size:12px;color:var(--label3);font-family:-apple-system,sans-serif;flex-shrink:0">자간</span>
+    <button class="toolbar-btn" style="flex:0;padding:8px 18px" onclick="changeLineHeight(-1)">↕−</button>
+    <span class="toolbar-label" id="line-height-label">1.9</span>
+    <button class="toolbar-btn" style="flex:0;padding:8px 18px" onclick="changeLineHeight(1)">↕+</button>
+  </div>
+  <!-- 언어 모드 -->
+  <div class="toolbar-row">
+    <button class="toolbar-btn" id="mode-ko" onclick="setMode('ko')">한국어만</button>
+    <button class="toolbar-btn" id="mode-both" onclick="setMode('both')">둘 다</button>
+    <button class="toolbar-btn" id="mode-en" onclick="setMode('en')">영어만</button>
+  </div>
+  <!-- 테마 -->
+  <div class="toolbar-row" style="justify-content:center;gap:16px">
+    <button class="theme-btn theme-light-btn" id="theme-light" onclick="setTheme('light')"></button>
+    <button class="theme-btn theme-sepia-btn" id="theme-sepia" onclick="setTheme('sepia')"></button>
+    <button class="theme-btn theme-dark-btn" id="theme-dark" onclick="setTheme('dark')"></button>
+    <button class="toolbar-btn" style="flex:0;padding:6px 12px;font-size:13px;color:var(--destructive)" onclick="deleteCurrent()">삭제</button>
+  </div>
 </div>
 
 <!-- SETTINGS -->
@@ -205,10 +247,85 @@ let entries = [];
 let currentId = null;
 let fileSha = null;
 
+// ── READER PREFS ──
+let prefs = { fontSize: 17, lineHeight: 1.9, mode: 'ko', theme: 'light' };
+
+function loadPrefs() {
+  try { const p = localStorage.getItem('reader-prefs'); if (p) prefs = { ...prefs, ...JSON.parse(p) }; } catch(_) {}
+  applyPrefs();
+}
+function savePrefs() {
+  localStorage.setItem('reader-prefs', JSON.stringify(prefs));
+}
+function applyPrefs() {
+  const prose = document.getElementById('read-prose');
+  if (prose) {
+    prose.style.fontSize = prefs.fontSize + 'px';
+    prose.style.lineHeight = prefs.lineHeight;
+    prose.classList.remove('hide-en', 'hide-ko');
+    if (prefs.mode === 'ko') prose.classList.add('hide-en');
+    if (prefs.mode === 'en') prose.classList.add('hide-ko');
+  }
+  document.getElementById('font-size-label').textContent = prefs.fontSize + 'px';
+  document.getElementById('line-height-label').textContent = prefs.lineHeight.toFixed(1);
+
+  // mode buttons
+  ['ko','both','en'].forEach(m => {
+    document.getElementById('mode-' + m)?.classList.toggle('active', prefs.mode === m);
+  });
+
+  // theme
+  setTheme(prefs.theme, false);
+}
+
+function changeFontSize(delta) {
+  prefs.fontSize = Math.max(13, Math.min(24, prefs.fontSize + delta));
+  savePrefs(); applyPrefs();
+}
+function changeLineHeight(delta) {
+  prefs.lineHeight = Math.round((Math.max(1.4, Math.min(2.8, prefs.lineHeight + delta * 0.1))) * 10) / 10;
+  savePrefs(); applyPrefs();
+}
+function setMode(mode) {
+  prefs.mode = mode;
+  savePrefs(); applyPrefs();
+}
+function setTheme(theme, save = true) {
+  prefs.theme = theme;
+  document.body.className = 'theme-' + theme;
+  ['light','dark','sepia'].forEach(t => {
+    document.getElementById('theme-' + t)?.classList.toggle('active', t === theme);
+  });
+  if (save) savePrefs();
+}
+
+// ── TOOLBAR ──
+let toolbarVisible = false;
+function toggleToolbar() {
+  toolbarVisible = !toolbarVisible;
+  document.getElementById('reader-toolbar').classList.toggle('visible', toolbarVisible);
+}
+function hideToolbar() {
+  toolbarVisible = false;
+  document.getElementById('reader-toolbar').classList.remove('visible');
+}
+
+// ── SCROLL POSITION ──
+function saveScrollPos() {
+  if (!currentId) return;
+  localStorage.setItem('scroll-' + currentId, window.scrollY);
+}
+function restoreScrollPos() {
+  if (!currentId) return;
+  const pos = localStorage.getItem('scroll-' + currentId);
+  if (pos) setTimeout(() => window.scrollTo(0, parseInt(pos)), 100);
+}
+
 // ── SETTINGS ──
 function loadSettings() {
   token = localStorage.getItem('gh-token') || '';
   if (token) document.getElementById('input-token').value = token;
+  loadPrefs();
 }
 function saveSettings() {
   token = document.getElementById('input-token').value.trim();
@@ -219,7 +336,6 @@ function saveSettings() {
 
 // ── GITHUB API ──
 async function ghGet() {
-  // SHA 가져오기용 API 호출
   const apiRes = await fetch(API_BASE, {
     headers: token ? { Authorization: `token ${token}` } : {}
   });
@@ -227,18 +343,17 @@ async function ghGet() {
   if (!apiRes.ok) throw new Error('GitHub 연결 실패');
   const apiData = await apiRes.json();
   fileSha = apiData.sha;
-
-  // 실제 내용은 raw URL로 가져오기 (인코딩 문제 없음)
   const rawUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${DATA_FILE}?t=${Date.now()}`;
   const rawRes = await fetch(rawUrl);
   if (!rawRes.ok) return { entries: [], sha: apiData.sha };
-  const entries = await rawRes.json();
-  return { entries, sha: apiData.sha };
+  const ents = await rawRes.json();
+  return { entries: ents, sha: apiData.sha };
 }
 
 async function ghPut(newEntries) {
   if (!token) throw new Error('토큰 없음');
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(newEntries, null, 2))));
+  const json = JSON.stringify(newEntries);
+  const content = btoa(encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (m, p) => String.fromCharCode('0x' + p)));
   const body = { message: 'update entries', content };
   if (fileSha) body.sha = fileSha;
   const res = await fetch(API_BASE, {
@@ -259,16 +374,15 @@ async function loadEntries() {
     entries = e || [];
     renderList();
   } catch(err) {
-    if (!token) {
-      el.innerHTML = `<div class="empty"><div class="empty-icon">🔑</div><div class="empty-title">토큰 설정 필요</div><div class="empty-desc">설정에서 GitHub 토큰을 입력해주세요</div></div>`;
-    } else {
-      el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">불러오기 실패</div><div class="empty-desc">${err.message}</div></div>`;
-    }
+    el.innerHTML = !token
+      ? `<div class="empty"><div class="empty-icon">🔑</div><div class="empty-title">토큰 설정 필요</div><div class="empty-desc">설정에서 GitHub 토큰을 입력해주세요</div></div>`
+      : `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">불러오기 실패</div><div class="empty-desc">${err.message}</div></div>`;
   }
 }
 
 // ── VIEWS ──
 function showView(name) {
+  if (name !== 'read') hideToolbar();
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
@@ -337,21 +451,40 @@ function openEntry(entry) {
   document.getElementById('read-nav-title').textContent = entry.title;
   document.getElementById('read-work').textContent = entry.workTitle ? `『${entry.workTitle}』` : '';
   document.getElementById('read-title').textContent = entry.title;
+
   let meta = `<span>${new Date(entry.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})}</span><span>·</span><span>${entry.content.trim().length.toLocaleString()}자</span>`;
   if (entry.sourceUrl) meta += `<a href="${entry.sourceUrl}" target="_blank">원문 보기</a>`;
   document.getElementById('read-meta').innerHTML = meta;
-  document.getElementById('read-prose').innerHTML = entry.content.split(/\n+/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('');
+
+  // 단락 파싱 - 영어/한글 구분
+  const paragraphs = entry.content.split(/\n+/).filter(p => p.trim());
+  const prose = document.getElementById('read-prose');
+  prose.innerHTML = paragraphs.map(p => {
+    const isEnglish = /^[A-Za-z\s\d.,!?;:'"()\-—…]+$/.test(p.trim());
+    const cls = isEnglish ? 'en' : 'ko';
+    return `<p class="${cls}">${p}</p>`;
+  }).join('');
+
   showView('read');
+  applyPrefs();
+  restoreScrollPos();
+
+  // 스크롤 위치 저장 (1초마다)
+  window.addEventListener('scroll', saveScrollPos);
+}
+
+function exitRead() {
+  saveScrollPos();
+  window.removeEventListener('scroll', saveScrollPos);
+  hideToolbar();
+  showView('list');
 }
 
 async function deleteCurrent() {
   if (!confirm('이 번역을 삭제할까요?')) return;
   entries = entries.filter(e => e.id !== currentId);
-  try {
-    await ghPut(entries);
-    showToast('삭제됐어요');
-  } catch(_) { showToast('삭제 실패'); }
-  showView('list');
+  try { await ghPut(entries); showToast('삭제됐어요'); } catch(_) { showToast('삭제 실패'); }
+  exitRead();
 }
 
 async function clearAll() {
@@ -361,24 +494,20 @@ async function clearAll() {
   showView('list');
 }
 
-// ── IMPORT FROM SHORTCUT ──
+// ── IMPORT ──
 async function checkImport() {
   const params = new URLSearchParams(location.search);
   const raw = params.get('data');
   if (!raw) return;
   history.replaceState({}, '', location.pathname);
-
   try {
     const data = JSON.parse(decodeURIComponent(raw));
     if (!data.content || data.content.length < 10) return;
-
     showToast('저장 중…');
     const { entries: current } = await ghGet();
     entries = current || [];
-
     const already = entries.some(e => e.createdAt === data.createdAt);
     if (already) { showToast('이미 저장된 번역이에요'); renderList(); return; }
-
     const entry = {
       id: Math.random().toString(36).slice(2) + Date.now().toString(36),
       title: data.title || '번역',
