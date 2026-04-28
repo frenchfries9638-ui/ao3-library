@@ -148,7 +148,12 @@
     <div class="navbar-inner">
       <button class="navbar-btn" onclick="loadIndex()">↻</button>
       <span class="navbar-title">서재</span>
-      <button class="navbar-btn" onclick="showView('settings')">설정</button>
+      <div style="display:flex;gap:2px">
+        <label class="navbar-btn" style="cursor:pointer" title="파일 추가">＋
+          <input type="file" id="file-input" accept=".txt,.pdf,.epub" style="display:none" onchange="handleFileUpload(event)" />
+        </label>
+        <button class="navbar-btn" onclick="showView('settings')">설정</button>
+      </div>
     </div>
   </div>
   <div class="navbar-large">서재</div>
@@ -280,7 +285,7 @@ const RAW   = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main`;
 
 // ── STATE ──
 let token = '';
-let index = [];        // [{id, title, workTitle, sourceUrl, tags, createdAt, updatedAt}]
+let index = [];
 let indexSha = null;
 let currentMeta = null;
 let activeTag = null;
@@ -790,6 +795,96 @@ function showToast(msg){
   t.className='toast'; t.textContent=msg;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),2500);
+}
+
+// ── FILE UPLOAD ──
+async function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = '';
+
+  if (!token) { showToast('GitHub 토큰을 먼저 설정해주세요'); return; }
+
+  showSyncBar();
+  showToast('파일 읽는 중…');
+
+  try {
+    let content = '';
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'txt') {
+      content = await readAsText(file);
+    } else if (ext === 'pdf') {
+      content = await readPdf(file);
+    } else if (ext === 'epub') {
+      content = await readEpub(file);
+    } else {
+      removeSyncBar();
+      showToast('지원하지 않는 파일 형식이에요'); return;
+    }
+    if (!content.trim()) { removeSyncBar(); showToast('내용을 읽을 수 없어요'); return; }
+
+    showToast('GitHub에 저장 중…');
+
+    const id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const now = new Date().toISOString();
+    const meta = { id, title: file.name.replace(/\.[^.]+$/, ''), workTitle: '', sourceUrl: '', tags: [], createdAt: now, updatedAt: now };
+
+    // 본문 저장
+    await saveContent(id, content, null);
+    // index 업데이트
+    index.unshift(meta);
+    await saveIndex();
+
+    removeSyncBar();
+    showToast('파일을 추가했어요!');
+    openEntry(meta);
+  } catch(e) {
+    removeSyncBar();
+    showToast('실패: ' + e.message);
+  }
+}
+
+function readAsText(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = rej; r.readAsText(file, 'utf-8'); });
+}
+function readAsArrayBuffer(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = rej; r.readAsArrayBuffer(file); });
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+}
+
+async function readPdf(file) {
+  if (!window.pdfjsLib) {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  const buf = await readAsArrayBuffer(file);
+  const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const tc = await page.getTextContent();
+    pages.push(tc.items.map(item => item.str).join(' '));
+  }
+  return pages.join('\n\n');
+}
+
+async function readEpub(file) {
+  if (!window.JSZip) { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'); }
+  const buf = await readAsArrayBuffer(file);
+  const zip = await window.JSZip.loadAsync(buf);
+  const texts = [];
+  const files = Object.keys(zip.files).filter(f => /\.(html|xhtml|htm)$/i.test(f)).sort();
+  for (const fname of files) {
+    const html = await zip.files[fname].async('string');
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('script,style,nav').forEach(el => el.remove());
+    const text = doc.body?.innerText || doc.body?.textContent || '';
+    if (text.trim()) texts.push(text.trim());
+  }
+  return texts.join('\n\n');
 }
 
 // ── INIT ──
