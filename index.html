@@ -83,6 +83,23 @@
     /* LOADING */
     .read-loading { display:flex; align-items:center; justify-content:center; padding:80px 20px; gap:12px; color:var(--label2); font-family:-apple-system,sans-serif; }
 
+    /* 진행률 바 */
+    .progress-bar { position:fixed; top:0; left:0; right:0; height:3px; z-index:150; background:var(--separator); }
+    .progress-fill { height:100%; background:var(--tint); transition:width .1s; }
+    .progress-label { position:fixed; bottom:calc(env(safe-area-inset-bottom) + 60px); right:16px; background:var(--bg-nav); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border:.5px solid var(--separator); border-radius:20px; padding:4px 12px; font-size:12px; color:var(--label2); font-family:-apple-system,sans-serif; z-index:50; transition:opacity .3s; }
+
+    /* 목차 */
+    .toc-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.4); display:none; }
+    .toc-overlay.on { display:block; }
+    .toc-panel { position:absolute; left:0; top:0; bottom:0; width:80%; max-width:320px; background:var(--bg); overflow-y:auto; }
+    .toc-header { padding:16px 20px; border-bottom:.5px solid var(--separator); font-size:17px; font-weight:600; color:var(--label); font-family:-apple-system,sans-serif; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:var(--bg); }
+    .toc-close { background:none; border:none; color:var(--tint); font-size:17px; cursor:pointer; font-family:-apple-system,sans-serif; }
+    .toc-item { padding:12px 20px; border-bottom:.5px solid var(--separator); cursor:pointer; font-family:-apple-system,sans-serif; }
+    .toc-item:active { background:var(--fill); }
+    .toc-item-title { font-size:15px; color:var(--label); margin-bottom:2px; }
+    .toc-item-num { font-size:12px; color:var(--label3); }
+    .toc-item.current .toc-item-title { color:var(--tint); }
+
     /* TOOLBAR */
     .reader-toolbar { position:fixed; bottom:0; left:0; right:0; background:var(--bg-nav); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); border-top:.5px solid var(--separator); padding:10px 16px; padding-bottom:calc(10px + env(safe-area-inset-bottom)); display:none; flex-direction:column; gap:10px; z-index:50; }
     .reader-toolbar.on { display:flex; }
@@ -147,13 +164,20 @@
 
 <!-- READ -->
 <div class="view" id="view-read">
+  <div class="progress-bar" id="progress-bar" style="display:none">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
   <div class="navbar">
     <div class="navbar-inner">
       <button class="navbar-btn" onclick="exitRead()">‹ 서재</button>
       <span class="navbar-title" id="read-nav-title"></span>
-      <button class="navbar-btn" onclick="toggleToolbar()">가✦</button>
+      <div style="display:flex;gap:2px">
+        <button class="navbar-btn" onclick="toggleToc()" style="font-size:15px">≡</button>
+        <button class="navbar-btn" onclick="toggleToolbar()">가✦</button>
+      </div>
     </div>
   </div>
+  <div class="progress-label" id="progress-label" style="opacity:0">0%</div>
   <div class="read-hd">
     <div class="read-work" id="read-work"></div>
     <div class="read-title" id="read-title"></div>
@@ -162,6 +186,17 @@
   <div class="read-tags" id="read-tags"></div>
   <div class="read-divider"></div>
   <div id="read-prose-wrap"></div>
+</div>
+
+<!-- TOC -->
+<div class="toc-overlay" id="toc-overlay" onclick="closeToc()">
+  <div class="toc-panel" onclick="event.stopPropagation()">
+    <div class="toc-header">
+      <span>목차</span>
+      <button class="toc-close" onclick="closeToc()">닫기</button>
+    </div>
+    <div id="toc-list"></div>
+  </div>
 </div>
 
 <!-- TOOLBAR -->
@@ -357,20 +392,91 @@ async function saveContent(id, content, sha) {
 }
 
 // ── RENDER ──
+let tocItems = [];
+
 function renderProse(content) {
   const wrap = document.getElementById('read-prose-wrap');
   const paragraphs = content.split(/\n+/).filter(p => p.trim());
+  tocItems = [];
+
   const prose = document.createElement('div');
   prose.className = 'prose';
   prose.id = 'read-prose';
-  prose.innerHTML = paragraphs.map(p => {
+
+  let paraIndex = 0;
+  prose.innerHTML = paragraphs.map((p, i) => {
     const cls = /[\uAC00-\uD7A3]/.test(p) ? 'ko' : 'en';
-    return `<p class="${cls}">${p}</p>`;
+    // 챕터 감지: 짧고 숫자/장/화/chapter 포함
+    const isHeading = p.length < 60 && /^(chapter|제?\d+|\d+화|\d+장|prologue|epilogue|프롤로그|에필로그)/i.test(p.trim());
+    if (isHeading) {
+      tocItems.push({ title: p.trim(), index: i });
+      return `<p class="${cls}" id="para-${i}" style="font-weight:600;font-size:1.1em;margin-top:2em">${p}</p>`;
+    }
+    return `<p class="${cls}" id="para-${i}">${p}</p>`;
   }).join('');
+
   wrap.innerHTML = '';
   wrap.appendChild(prose);
   applyPrefs();
   restoreScrollPos();
+  initProgress();
+  renderToc();
+}
+
+// ── 진행률 ──
+function initProgress() {
+  const bar = document.getElementById('progress-bar');
+  const fill = document.getElementById('progress-fill');
+  const label = document.getElementById('progress-label');
+  if (!bar) return;
+  bar.style.display = 'block';
+
+  let labelTimer;
+  function updateProgress() {
+    const prose = document.getElementById('read-prose');
+    if (!prose) return;
+    const rect = prose.getBoundingClientRect();
+    const total = prose.offsetHeight;
+    const scrolled = -rect.top + window.innerHeight * 0.5;
+    const pct = Math.max(0, Math.min(100, Math.round(scrolled / total * 100)));
+    fill.style.width = pct + '%';
+    label.textContent = pct + '%';
+    label.style.opacity = '1';
+    clearTimeout(labelTimer);
+    labelTimer = setTimeout(() => { label.style.opacity = '0'; }, 1500);
+  }
+
+  window.removeEventListener('scroll', updateProgress);
+  window.addEventListener('scroll', updateProgress);
+  updateProgress();
+}
+
+// ── 목차 ──
+function renderToc() {
+  const list = document.getElementById('toc-list');
+  if (!list) return;
+  if (tocItems.length === 0) {
+    list.innerHTML = `<div style="padding:20px;text-align:center;font-size:14px;color:var(--label3);font-family:-apple-system,sans-serif">목차가 없어요</div>`;
+    return;
+  }
+  list.innerHTML = tocItems.map((item, i) =>
+    `<div class="toc-item" id="toc-${i}" onclick="jumpToSection(${item.index});closeToc()">
+      <div class="toc-item-num">${i + 1}</div>
+      <div class="toc-item-title">${item.title}</div>
+    </div>`
+  ).join('');
+}
+
+function jumpToSection(paraIndex) {
+  const el = document.getElementById('para-' + paraIndex);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function toggleToc() {
+  document.getElementById('toc-overlay').classList.toggle('on');
+}
+function closeToc() {
+  document.getElementById('toc-overlay').classList.remove('on');
 }
 
 function getAllTags() {
@@ -493,6 +599,9 @@ function exitRead() {
   saveScrollPos();
   window.removeEventListener('scroll', saveScrollPos);
   hideToolbar();
+  closeToc();
+  const bar = document.getElementById('progress-bar');
+  if (bar) bar.style.display = 'none';
   currentMeta = null;
   showView('list');
 }
